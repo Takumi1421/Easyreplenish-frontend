@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   const addSKU = () => {
-    axios.post('http://localhost:8000/sku', newSKU)
+    axios.post('https://easyreplenish-backend.onrender.com', newSKU)
       .then(() => {
         setNewSKU({ sku_id: '', product_name: '', current_stock: 0, reorder_threshold: 0 });
         fetchInventory();
