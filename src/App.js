@@ -12,7 +12,7 @@ function App() {
   });
 
   const fetchInventory = () => {
-    axios.get('http://localhost:8000/inventory')
+    axios.get('https://easyreplenish-backend.onrender.com/inventory')
       .then(res => setInventory(res.data))
       .catch(err => console.error('Error fetching inventory:', err));
   };
@@ -22,12 +22,12 @@ function App() {
   }, []);
 
   const addSKU = () => {
-    axios.post('https://easyreplenish-backend.onrender.com', newSKU)
-      .then(() => {
-        setNewSKU({ sku_id: '', product_name: '', current_stock: 0, reorder_threshold: 0 });
-        fetchInventory();
-      })
-      .catch(err => alert('Error adding SKU: ' + err.response.data.detail));
+    axios.post('https://easyreplenish-backend.onrender.com/sku', newSKU)
+  .then(() => {
+    setNewSKU({ sku_id: '', product_name: '', current_stock: 0, reorder_threshold: 0 });
+    fetchInventory(); // Refresh list
+  })
+  .catch(err => console.error("Error adding SKU:", err));
   };
 
   return (
