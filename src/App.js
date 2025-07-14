@@ -26,6 +26,7 @@ function InventoryDashboard() {
   const [inventory, setInventory] = useState([]);
   const [salesData, setSalesData] = useState({});
   const [profits, setProfits] = useState({});
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     axios
@@ -45,6 +46,13 @@ function InventoryDashboard() {
         }
       })
       .catch((err) => console.error("Inventory fetch error:", err));
+
+    axios
+      .get("https://easyreplenish-backend.onrender.com/orders")
+      .then((res) => {
+        setOrders(res.data);
+      })
+      .catch((err) => console.error("Order fetch error:", err));
   }, []);
 
   const fetchSales = (skuId) => {
@@ -99,8 +107,8 @@ function InventoryDashboard() {
             return (
               <div
                 key={sku.sku_id}
-                className="border border-gray-200 rounded-2xl shadow-xl p-6 bg-white hover:shadow-2xl transition duration-300"
-              >
+                className="bg-white border-2 border-indigo-100 shadow-xl rounded-2xl p-6 transition-all hover:shadow-2xl hover:scale-[1.02]"
+              >          
                 <div className="flex justify-between items-center mb-2">
                   <h2 className="text-xl font-semibold text-indigo-600">
                     {sku.product_name}
@@ -127,6 +135,37 @@ function InventoryDashboard() {
             No inventory available. Please add some SKUs.
           </p>
         )}
+      </div>
+      <h2 className="text-2xl font-bold text-gray-700 mt-12 mb-4">📦 Live Orders</h2>
+      <div className="overflow-auto rounded-lg shadow-lg border border-gray-200 bg-white">
+        <table className="min-w-full table-auto">
+          <thead className="bg-indigo-100 text-indigo-800 text-sm font-semibold text-left">
+            <tr>
+              <th className="py-3 px-4">Order ID</th>
+              <th className="py-3 px-4">SKU</th>
+              <th className="py-3 px-4">Platform</th>
+              <th className="py-3 px-4">Quantity</th>
+              <th className="py-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr key={order.id} className="border-t border-gray-100 hover:bg-gray-50">
+                <td className="py-2 px-4">{order.order_id}</td>
+                <td className="py-2 px-4">{order.sku_id}</td>
+                <td className="py-2 px-4">{order.platform}</td>
+                <td className="py-2 px-4">{order.quantity}</td>
+                <td className={`py-2 px-4 font-semibold ${
+                  order.status.toLowerCase() === 'delivered' ? 'text-green-600' :
+                  order.status.toLowerCase() === 'shipped' ? 'text-yellow-600' :
+                  order.status.toLowerCase() === 'returned' ? 'text-red-500' : 'text-gray-600'
+                }`}>
+                  {order.status}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
