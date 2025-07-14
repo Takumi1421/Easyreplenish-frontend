@@ -117,18 +117,7 @@ function InventoryDashboard() {
                   <strong>Profit:</strong> ₹{profits?.[sku?.sku_id] || 0}
                 </p>
                 <div className="bg-gray-50 p-2 rounded-xl text-sm text-gray-400">
-                  {sku?.sku_id && Array.isArray(salesData?.[sku.sku_id]) ? (
-                    (() => {
-                      try {
-                        return <Line data={getChartData(sku.sku_id)} options={{ responsive: true }} />;
-                      } catch (e) {
-                        console.error("Chart render failed:", e);
-                        return <p>Chart unavailable</p>;
-                      }
-                    })()
-                  ) : (
-                    <p>No chart data</p>
-                  )}
+                  <p>Chart rendering temporarily disabled for debugging.</p>
                 </div>
               </div>
             );
