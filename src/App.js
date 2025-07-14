@@ -94,42 +94,45 @@ function InventoryDashboard() {
       </h1>
       <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {inventory.length > 0 ? (
-          inventory.map((sku) => (
-            <div
-              key={sku.sku_id}
-              className="border border-gray-200 rounded-2xl shadow-xl p-6 bg-white hover:shadow-2xl transition duration-300"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-semibold text-indigo-600">
-                  {sku.product_name}
-                </h2>
-                <span className="text-sm text-gray-400">SKU: {sku.sku_id}</span>
+          inventory.map((sku) => {
+            console.log("Rendering SKU card for:", sku);
+            return (
+              <div
+                key={sku.sku_id}
+                className="border border-gray-200 rounded-2xl shadow-xl p-6 bg-white hover:shadow-2xl transition duration-300"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-xl font-semibold text-indigo-600">
+                    {sku.product_name}
+                  </h2>
+                  <span className="text-sm text-gray-400">SKU: {sku.sku_id}</span>
+                </div>
+                <p className="text-gray-700">
+                  <strong>Stock:</strong> {sku.current_stock}
+                </p>
+                <p className="text-gray-700">
+                  <strong>Reorder Threshold:</strong> {sku.reorder_threshold}
+                </p>
+                <p className="text-gray-700 mb-4">
+                  <strong>Profit:</strong> ₹{profits?.[sku?.sku_id] || 0}
+                </p>
+                <div className="bg-gray-50 p-2 rounded-xl text-sm text-gray-400">
+                  {sku?.sku_id && Array.isArray(salesData?.[sku.sku_id]) ? (
+                    (() => {
+                      try {
+                        return <Line data={getChartData(sku.sku_id)} options={{ responsive: true }} />;
+                      } catch (e) {
+                        console.error("Chart render failed:", e);
+                        return <p>Chart unavailable</p>;
+                      }
+                    })()
+                  ) : (
+                    <p>No chart data</p>
+                  )}
+                </div>
               </div>
-              <p className="text-gray-700">
-                <strong>Stock:</strong> {sku.current_stock}
-              </p>
-              <p className="text-gray-700">
-                <strong>Reorder Threshold:</strong> {sku.reorder_threshold}
-              </p>
-              <p className="text-gray-700 mb-4">
-                <strong>Profit:</strong> ₹{profits?.[sku?.sku_id] || 0}
-              </p>
-              <div className="bg-gray-50 p-2 rounded-xl text-sm text-gray-400">
-                {sku?.sku_id && Array.isArray(salesData?.[sku.sku_id]) ? (
-                  (() => {
-                    try {
-                      return <Line data={getChartData(sku.sku_id)} options={{ responsive: true }} />;
-                    } catch (e) {
-                      console.error("Chart render failed:", e);
-                      return <p>Chart unavailable</p>;
-                    }
-                  })()
-                ) : (
-                  <p>No chart data</p>
-                )}
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p className="text-center text-gray-500 col-span-full">
             No inventory available. Please add some SKUs.
