@@ -31,15 +31,18 @@ function InventoryDashboard() {
     axios
       .get("https://easyreplenish-backend.onrender.com/inventory")
       .then((res) => {
-        setInventory(res.data);
+        console.log("Fetched inventory:", res.data);
         if (Array.isArray(res.data)) {
-  res.data
-    .filter((sku) => sku && sku.sku_id) 
-    .forEach((sku) => {
-      fetchSales(sku.sku_id);
-      fetchProfit(sku.sku_id);
-    });
-}
+          setInventory(res.data);
+          res.data.forEach((sku) => {
+            if (sku && sku.sku_id) {
+              fetchSales(sku.sku_id);
+              fetchProfit(sku.sku_id);
+            }
+          });
+        } else {
+          console.error("Expected array, got:", res.data);
+        }
       })
       .catch((err) => console.error("Inventory fetch error:", err));
   }, []);
@@ -64,7 +67,9 @@ function InventoryDashboard() {
 
   const getChartData = (skuId) => {
     const data = salesData[skuId] || [];
-    console.log(`Sales data for ${skuId}:`, salesData[skuId]);
+    if (!salesData[skuId]) {
+      console.warn(`No sales data for SKU: ${skuId}`);
+    }
     return {
       labels: data.map((s) => new Date(s.date).toLocaleDateString()),
       datasets: [
