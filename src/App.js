@@ -66,7 +66,7 @@ function InventoryDashboard() {
   };
 
   const getChartData = (skuId) => {
-    const data = salesData[skuId] || [];
+    const data = Array.isArray(salesData[skuId]) ? salesData[skuId] : [];
     if (!salesData[skuId]) {
       console.warn(`No sales data for SKU: ${skuId}`);
     }
@@ -112,11 +112,20 @@ function InventoryDashboard() {
                 <strong>Reorder Threshold:</strong> {sku.reorder_threshold}
               </p>
               <p className="text-gray-700 mb-4">
-                <strong>Profit:</strong> ₹{profits[sku.sku_id] ?? "0"}
+                <strong>Profit:</strong> ₹{profits?.[sku?.sku_id] || 0}
               </p>
-              <div className="bg-gray-50 p-2 rounded-xl">
-                {sku.sku_id && salesData[sku.sku_id] && (
-                  <Line data={getChartData(sku.sku_id)} options={{ responsive: true }} />
+              <div className="bg-gray-50 p-2 rounded-xl text-sm text-gray-400">
+                {sku?.sku_id && Array.isArray(salesData?.[sku.sku_id]) ? (
+                  (() => {
+                    try {
+                      return <Line data={getChartData(sku.sku_id)} options={{ responsive: true }} />;
+                    } catch (e) {
+                      console.error("Chart render failed:", e);
+                      return <p>Chart unavailable</p>;
+                    }
+                  })()
+                ) : (
+                  <p>No chart data</p>
                 )}
               </div>
             </div>
