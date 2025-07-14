@@ -32,10 +32,14 @@ function InventoryDashboard() {
       .get("https://easyreplenish-backend.onrender.com/inventory")
       .then((res) => {
         setInventory(res.data);
-        res.data.forEach((sku) => {
-          fetchSales(sku.sku_id);
-          fetchProfit(sku.sku_id);
-        });
+        if (Array.isArray(res.data)) {
+  res.data
+    .filter((sku) => sku && sku.sku_id) 
+    .forEach((sku) => {
+      fetchSales(sku.sku_id);
+      fetchProfit(sku.sku_id);
+    });
+}
       })
       .catch((err) => console.error("Inventory fetch error:", err));
   }, []);
